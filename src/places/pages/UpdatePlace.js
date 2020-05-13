@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
@@ -39,23 +39,42 @@ const DUMMY_PLACES = [
 ];
 
 const UpdatePlace = (props) => {
+  // @Note: Using this state because form shows loading once we clear title field value(from frontend)
+  const [isLoading, setIsLoading] = useState(true);
   const placeId = useParams().placeId;
 
-  const identiFiedPlace = DUMMY_PLACES.find((place) => place.id === placeId);
-
-  const [formState, inputHandler] = useForm(
+  const [formState, inputHandler, setFormData] = useForm(
     {
       title: {
-        value: identiFiedPlace.title,
+        value: '',
         isValid: true,
       },
       description: {
-        value: identiFiedPlace.description,
+        value: '',
         isValid: true,
       },
     },
-    true
+    false
   );
+
+  const identiFiedPlace = DUMMY_PLACES.find((place) => place.id === placeId);
+
+  useEffect(() => {
+    setFormData(
+      {
+        title: {
+          value: identiFiedPlace.title,
+          isValid: true,
+        },
+        description: {
+          value: identiFiedPlace.description,
+          isValid: true,
+        },
+      },
+      true
+    );
+    setIsLoading(false);
+  }, [setFormData, identiFiedPlace]);
 
   const placeUpdateSubmitHandler = (event) => {
     event.preventDefault();
@@ -69,6 +88,16 @@ const UpdatePlace = (props) => {
       </div>
     );
   }
+
+  // @Note: It will render form only when there is data recieved present - because INPUT component only updates value props once in input
+  if (isLoading) {
+    return (
+      <div className="center">
+        <h2>Loading...</h2>
+      </div>
+    );
+  }
+
   return (
     <form className="place-form" onSubmit={placeUpdateSubmitHandler}>
       <Input
