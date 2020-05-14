@@ -7,6 +7,13 @@ import './PlaceItem.css';
 
 const PlaceItem = (props) => {
   const [showMap, setShowMap] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const confirmDeleteHandler = () => {
+    setShowConfirmModal(false);
+    console.log('DELETING');
+  };
+
   return (
     <Fragment>
       <Modal
@@ -24,6 +31,27 @@ const PlaceItem = (props) => {
           <Map coordinates={props.coordinates} />
         </div>
       </Modal>
+      <Modal
+        show={showConfirmModal}
+        onCancel={() => setShowConfirmModal(false)}
+        header="Are you sure?"
+        footerClass="place-item__model-actions"
+        footer={
+          <Fragment>
+            <Button onClick={() => setShowConfirmModal(false)} inverse>
+              CANCEL
+            </Button>
+            <Button onClick={() => confirmDeleteHandler()} danger>
+              DELETE
+            </Button>
+          </Fragment>
+        }
+      >
+        <p>
+          Do you really want to proceed? Please note that it can't be undone
+          thereafter.
+        </p>
+      </Modal>
       <li className="place-item">
         <Card className="place-item__content">
           <div className="place-item__image">
@@ -40,7 +68,9 @@ const PlaceItem = (props) => {
               VIEW ON MAP
             </Button>
             <Button to={`/places/${props.id}`}>EDIT</Button>
-            <Button danger>DELETE</Button>
+            <Button onClick={() => setShowConfirmModal(true)} danger>
+              DELETE
+            </Button>
           </div>
         </Card>
       </li>
